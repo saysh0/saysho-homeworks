@@ -7,8 +7,12 @@
 
 def prime_number(n):
     is_prime_number = True if n / n == 1 and n % 2 == 1 else False
+    for i in range(2, n):
+        if n % i == 0:
+            is_prime_number = False
+            break
     return f'Число {n} является простым: {is_prime_number}'
-print(prime_number(17))
+print(prime_number(9))
 
 #task2 Фильтрация чисел по чётности.
 # Напишите функцию, которая принимает filter_type ("even" или "odd") и произвольное количество чисел, возвращая только те, которые соответствуют фильтру.
@@ -45,7 +49,6 @@ print(filter_numbers("prime", 2, 3, 5, 7))
 dict1 = {"a": 1, "b": 2}
 dict2 = {"b": 3, "c": 4}
 dict3 = {"d": 5}
-
 def dict_join(*args):
     new_dict = {}
     for i in args:

@@ -55,19 +55,19 @@
 #         print(res)
 # divide_num()
 
-def divide_num():
-    num1 = input('Введите делимое: ')
-    num2 = input('Введите делитель: ')
+num1 = input('Введите делимое: ')
+num2 = input('Введите делитель: ')
+def divide_num(n1, n2):
     try:
-        if int(num1) == 0 or int(num2) == 0:
+        if int(n1) == 0 or int(n2) == 0:
             raise ZeroDivisionError('Вы ввели ноль, деление на ноль не возможно.')
-        res = int(num1) / int(num2)
+        res = int(n1) / int(n2)
         return res
     except ZeroDivisionError:
         return 'Вы ввели ноль, деление на ноль не возможно.'
     except ValueError:
         return 'Вы ввели знак не являющийся числом.'
-print(divide_num())
+print(divide_num(num1, num2))
 
 #task2 Логирование ошибок.
 # Перенаправьте в предыдущей задаче вывод ошибок в файл errors.homework.python.25.log в соответствии с форматом ниже.
@@ -77,19 +77,19 @@ print(divide_num())
 import logging
 logging.basicConfig(level=logging.DEBUG, filename='errors.homework.python.25.log', format="%(asctime)s - %(filename)s - %(lineno)d - %(levelname)s - %(message)s", filemode='w', encoding='utf-8')
 
-def divide_num():
-    num1 = input('Введите делимое: ')
-    num2 = input('Введите делитель: ')
+numer1 = input('Введите делимое: ')
+numer2 = input('Введите делитель: ')
+def divide_num(n1, n2):
     try:
-        if int(num1) == 0 or int(num2) == 0:
+        if int(n1) == 0 or int(n2) == 0:
             raise ZeroDivisionError('Вы ввели ноль, деление на ноль не возможно.')
-        res = int(num1) / int(num2)
-        logging.info(f"Успешное деление: {num1} / {num2} = {res}")
+        res = int(n1) / int(n2)
+        logging.info(f"Успешное деление: {n1} / {n2} = {res}")
         return res
     except ZeroDivisionError as e:
         logging.error(f"Ошибка деления на ноль: {e}")
         return 'Вы ввели ноль, деление на ноль не возможно.'
     except ValueError:
-        logging.warning(f"Пользователь ввел не число: {num1} или {num2}")
+        logging.warning(f"Пользователь ввел не число: {n1} или {n2}")
         return 'Вы ввели знак не являющийся числом.'
-print(divide_num())
+print(divide_num(numer1, numer2))

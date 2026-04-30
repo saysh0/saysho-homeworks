@@ -28,7 +28,7 @@ def measure_time(func):
 def compute():
     total = 0
     for i in range(10_000_000):
-        total += 1
+        total += i
     return total
 
 print(compute())
@@ -65,7 +65,7 @@ def measure_time(repeats):
 def compute():
     total = 0
     for i in range(10_000_000):
-        total += 1
+        total += i
     return total
 
 print(compute())

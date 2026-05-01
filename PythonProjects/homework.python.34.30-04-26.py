@@ -29,8 +29,8 @@ class Rectangle:
 
 rectangle1 = Rectangle(4, 5)
 print(f'Площадь: {rectangle1.get_area()}')
-rectangle2 = Rectangle(5, 7)
-print(f'Новая площадь: {rectangle2.get_area()}')
+rectangle1.width, rectangle1.height = 7, 5
+print(f'Новая площадь: {rectangle1.get_area()}')
 
 # task2 Класс Counter.
 # Реализуйте класс Counter, который представляет собой простой счётчик.

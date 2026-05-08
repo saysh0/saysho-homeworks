@@ -64,7 +64,7 @@ class Counter:
         :return: Строка с уведомлением о новом значении.
         """
         self.value += 1
-        return f"Значение увеличено, текущее: {self.value}"
+        return self.value
 
     def min_one(self):
         """
@@ -73,7 +73,7 @@ class Counter:
         :return: Строка с уведомлением о новом значении.
         """
         self.value -= 1
-        return f"Значение уменьшено, текущее: {self.value}"
+        return self.value
 
     def current_value(self):
         """
@@ -81,11 +81,11 @@ class Counter:
 
         :return: Строка с текущим значением.
         """
-        return f"Текущее значение: {self.value}"
+        return self.value
 
 counter = Counter()
-print(counter.plus_one())
-print(counter.plus_one())
-print(counter.plus_one())
-print(counter.min_one())
-print(counter.current_value())
+print(f"Значение увеличено, текущее: {counter.plus_one()}")
+print(f"Значение увеличено, текущее: {counter.plus_one()}")
+print(f"Значение увеличено, текущее: {counter.plus_one()}")
+print(f"Значение уменьшено, текущее: {counter.min_one()}")
+print(f"Текущее значение: {counter.current_value()}")

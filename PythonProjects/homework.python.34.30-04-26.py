@@ -57,6 +57,7 @@ class Counter:
             raise TypeError("Начальное значение счётчика должно быть числом (int или float)")
         self.value = value
 
+
     def plus_one(self):
         """
         Увеличивает значение счётчика на 1.
@@ -66,6 +67,7 @@ class Counter:
         self.value += 1
         return self.value
 
+
     def min_one(self):
         """
         Уменьшает значение счётчика на 1.
@@ -74,6 +76,7 @@ class Counter:
         """
         self.value -= 1
         return self.value
+
 
     def current_value(self):
         """

@@ -6,21 +6,50 @@
 # Добавьте метод get_total(), возвращающий количество пользователей.
 # Проверьте, что счётчик работает.
 
-# class User:
-#     total_users = 0
-#     def __init__(self, username: str, password: str | int):
-#         self.username = username
-#         self.password = password
-#         User.total_users += 1
-#
-#     def get_total(self):
-#         return self.total_users
-#
-#
-# usr1 = User("user1", "cheremsha10")
-# usr2 = User("user2", "cheremsha20")
-# usr3 = User("user3", "cheremsha30")
-# print(f"Total users: {usr1.get_total()}")
+class User:
+    total_users = 0
+    def __init__(self, username: str, password: str | int):
+        self.username = username
+        self.password = password
+        User.total_users += 1
+
+    def get_total(self):
+        return self.total_users
+
+
+usr1 = User("user1", "cheremsha10")
+usr2 = User("user2", "cheremsha20")
+usr3 = User("user3", "cheremsha30")
+print(f"Total users: {usr1.get_total()}")
+
+
+class User:
+    """Класс для управления данными пользователя и подсчета общего количества созданных аккаунтов."""
+    total_users: int = 0
+    def __init__(self, username: str, password: str | int) -> None:
+        """
+        Инициализирует нового пользователя.
+        :param username: Имя пользователя (строка).
+        :param password: Пароль (строка или число).
+        :raises ValueError: Если имя пользователя пустое.
+        """
+        self.username: str = username
+        self.password: str | int = password
+        User.total_users += 1
+
+    def get_total(self) -> int:
+        """
+        Возвращает общее количество созданных пользователей.
+        :return: Текущее значение счетчика total_users.
+        """
+        return User.total_users
+
+
+usr1 = User("user1", "cheremsha10")
+usr2 = User("user2", "cheremsha20")
+usr3 = User("user3", "cheremsha30")
+print(f"Total users: {usr1.get_total()}")
+
 
 #task2 Проверка данных пользователя.
 # Доработайте класс User.
@@ -32,8 +61,16 @@
 # Проверьте работу класса с разными значениями.
 
 class User:
-    total_users = 0
-    def __init__(self, username, password):
+    """
+    Класс для представления пользователя системы с автоматическим подсчетом экземпляров."""
+    total_users: int = 0
+    def __init__(self, username: str, password: str) -> None:
+        """
+        Инициализирует новый объект пользователя и проверяет корректность данных.
+        :param username: Имя пользователя.
+        :param password: Пароль (строка).
+        :raises ValueError: Если имя или пароль пусты, коротки или имеют неверный тип.
+        """
         self.username = username
         self.password = password
         User.total_users += 1
@@ -46,10 +83,17 @@ class User:
         if not isinstance(password, str):
             raise ValueError('Filed password is invalid!')
 
-    def get_total(self):
+    def get_total(self) -> int:
+        """
+        Возвращает общее количество созданных пользователей.
+        :return: Числовое значение счетчика total_users.
+        """
         return self.total_users
 
-    def __str__(self):
+    def __str__(self) -> str:
+        """
+        Возвращает понятное текстовое описание объекта пользователя.
+        """
         return f"Пользователь: {self.username}, пароль: {self.password}"
 
 

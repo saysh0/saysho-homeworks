@@ -5,7 +5,14 @@
 from os import name
 
 class Person:
-    def __init__(self, name):
+    """
+    Класс, представляющий человека.
+    """
+    def __init__(self, name: str) -> None:
+        """
+        Инициализирует новый экземпляр человека.
+        :param name: Имя человека.
+        """
         self.name = name
 
     def introduce(self):
@@ -18,18 +25,30 @@ class Person:
 # Пример вывода:
 
 class Person:
-    def __init__(self, name):
+    """
+    Класс, представляющий человека.
+    """
+    def __init__(self, name) -> str:
+        """
+        Инициализирует новый экземпляр человека.
+        :param name: Имя человека.
+        """
         self.name = name
 
-    def introduce(self):
+    def introduce(self) -> str:
         return f'Whatsup ma boy {self.name}'
 
 class Student(Person):
-    def __init__(self, name, course_nummer):
+    def __init__(self, name, course_nummer) -> None:
+        """
+        Инициализирует новый экземпляр студента.
+        :param name: Имя человека.
+        :param course_nummer: Номер курса.
+        """
         super().__init__(name)
         self.course_nummer = course_nummer
 
-    def introduce(self):
+    def introduce(self) -> str:
         return f"Whatsup ma boy {self.name}\nI'm on course {self.course_nummer}"
 
 student1 = Student("Nikita", 1)
@@ -47,26 +66,40 @@ print(student3.introduce())
 # Создайте список, в котором будут Student и Teacher, и вызовите у всех метод introduce().
 
 class Person:
-    def __init__(self, name):
+    def __init__(self, name) -> None:
+        """
+        Инициализирует новый экземпляр человека.
+        :param name: Имя человека.
+        """
         self.name = name
 
-    def introduce(self):
+    def introduce(self) -> str:
         return f'Whatsup ma boy {self.name}'
 
 class Student(Person):
-    def __init__(self, name, course_nummer):
+    def __init__(self, name, course_nummer) -> None:
+        """
+        Инициализирует новый экземпляр студента.
+        :param name: Имя человека.
+        :param course_nummer: Номер курса.
+        """
         super().__init__(name)
         self.course_nummer = course_nummer
 
-    def introduce(self):
+    def introduce(self) -> str:
         return f"Whatsup ma boy {self.name}\nI'm on course {self.course_nummer}"
 
 class Teacher(Person):
-    def __init__(self, name, subject):
+    def __init__(self, name, subject) -> None:
+        """
+        Инициализирует новый экземпляр студента.
+        :param name: Имя человека.
+        :param subject: Название предмета.
+        """
         super().__init__(name)
         self.subject = subject
 
-    def introduce(self):
+    def introduce(self) -> str:
         return f"Hello, I am professor {self.name}. My subject is{self.subject}."
 
 student1 = Student("Nikita", 1)

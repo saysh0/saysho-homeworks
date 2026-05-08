@@ -16,6 +16,7 @@ class User:
     def get_total(self):
         return self.total_users
 
+
 usr1 = User("user1", "cheremsha10")
 usr2 = User("user2", "cheremsha20")
 usr3 = User("user3", "cheremsha30")
@@ -48,6 +49,7 @@ class User:
 
     def __str__(self):
         return f"Пользователь: {self.username}, пароль: {self.password}"
+
 
 usr1 = User("user1", "cheremsha10")
 usr2 = User("user2", "cheremsha20")

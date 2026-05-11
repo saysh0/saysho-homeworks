@@ -33,17 +33,16 @@
 
 class AudioFileMixin:
     """Миксин для добавления функционала воспроизведения аудио."""
-    def play_audio(self) -> None:
-        print(f'Воспроизведение аудио для {self.__class__.__name__}:')
-        for track in self.audio_files:
-            print(track)
+    def play_audio(self) -> str:
+        return (f"Воспроизведение видео для {self.__class__.__name__}:\n"
+                + "\n".join(self.audio_files))
+
 
 class VideoFileMixin:
     """Миксин для добавления функционала воспроизведения видео."""
-    def play_video(self) -> None:
-        print(f'Воспроизведение аудио для {self.__class__.__name__}:')
-        for video in self.video_files:
-            print(video)
+    def play_video(self) -> str:
+        return (f"Воспроизведение видео для {self.__class__.__name__}:\n"
+                + "\n".join(self.video_files))
 
 class MediaPlayer(AudioFileMixin):
     """Класс медиаплеера, поддерживающий только аудио."""
@@ -71,7 +70,7 @@ class Laptop(AudioFileMixin, VideoFileMixin):
 tracks = ["track1.mp3", "track2.mp3"]
 movies = ["movie.mp4", "trailer.mov"]
 m = MediaPlayer(tracks)
-m.play_audio()
+print(m.play_audio())
 l = Laptop(tracks, movies)
-l.play_audio()
-l.play_video()
+print(l.play_audio())
+print(l.play_video())

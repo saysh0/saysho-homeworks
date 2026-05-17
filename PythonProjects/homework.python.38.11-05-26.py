@@ -48,30 +48,30 @@ class BankAccount:
         """
         return self.__balance
 
-    def top_up_balance(self, amount: float) -> str:
+    def top_up_balance(self, amount: float) -> float:
         """
         Метод для пополнения баланса.
 
         :param amount: Сумма, на которую увеличивается баланс.
-        :return: Статус выполнения операции.
+        :return: Данные, на какую сумму был пополнен баланс.
         """
         self.__balance += amount
         self.__history.append(f'Deposit: {amount}')
-        return 'Баланс успешно пополнен!'
+        return amount
 
-    def top_down_balance(self, amount: float) -> str:
+    def top_down_balance(self, amount: float) -> float:
         """
         Метод для снятия средств с баланса.
 
         :param amount: Сумма, которую необходимо снять.
-        :return: Статус выполнения операции.
+        :return: Данные, на какую сумму был снят баланс.
         :raise ValueError: Если сумма снятия больше текущего баланса.
         """
         if amount > self.__balance:
             raise ValueError('Средств на балансе меньше, чем вы пытаетесь снять.')
         self.__balance -= amount
         self.__history.append(f'Withdraw: {amount}')
-        return 'Деньги были успешно сняты с баланса!'
+        return amount
 
 
 usr1 = BankAccount('Nikita', 100)

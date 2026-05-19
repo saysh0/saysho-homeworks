@@ -30,7 +30,7 @@ for num, country in enumerate(cursor.fetchall(), 1):
 
 print(20 * '-') #для себя
 
-user_country = input('Введите название страны или ее номер из списка: ').lower().strip() #germany num = 57
+user_country = input('Введите название страны или ее номер из списка: ').capitalize().strip() #germany num = 57
 
 print(20 * '-') #для себя
 

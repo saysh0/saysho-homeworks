@@ -23,9 +23,7 @@ conn = pymysql.connect(**config)
 cursor = conn.cursor()
 
 cursor.execute('select Name from country')
-countrys = {}
 for num, country in enumerate(cursor.fetchall(), 1):
-    countrys[num] = country[0]
     print(f"{num}. {country[0]}")
 
 print(20 * '-') #для себя
@@ -36,12 +34,13 @@ print(20 * '-') #для себя
 
 if user_country.isdigit():
     user_country = int(user_country)
-    for num, country in countrys.items():
-        if num == user_country:
-            user_country = country
+    cursor.execute('select Name from country')
+    for num, country in enumerate(cursor.fetchall(), 1):
+        if user_country == num:
+            user_country = country[0]
 
 cursor.execute('select Code from country where Name =%s', (user_country,))
-country_code = cursor.fetchone()[0]
+country_code = cursor.fetchone()
 cursor.execute('select Name, Population from city where CountryCode = %s', (country_code,))
 for num, city in enumerate(cursor.fetchall(), 1):
     print(f"{num}. {city[0]} - {city[1]}")

@@ -45,5 +45,5 @@ country_code = cursor.fetchone()[0]
 cursor.execute('select Name, Population from city where CountryCode = %s', (country_code,))
 for num, city in enumerate(cursor.fetchall(), 1):
     print(f"{num}. {city[0]} - {city[1]}")
-
+conn.close()
 

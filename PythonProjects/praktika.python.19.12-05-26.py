@@ -54,12 +54,13 @@ class Door:
         self.door_status_global = True
 
 
+
     def door_status(self):
         from datetime import datetime
         time_now = round(datetime.now().timestamp())
         if self.__try == self.unlock_trys and ((time_now - int(self.blocked_time)) / 60) < self.block_time:
             self.door_status_global = False
-            return f'Door is blocked. Try again in {(self.block_time - ((time_now - int(self.blocked_time)) / 60))}'
+            raise ValueError('Door is blocked. Try again in {int(self.block_time - ((time_now - int(self.blocked_time)) / 60))}m')
         else:
             self.__try = 0
             self.door_status_global = True
@@ -70,7 +71,7 @@ class Door:
         unlock = 'Не открыл'
         from datetime import datetime
         if not self.door_status_global:
-            return f'Door is locked!'
+            raise ValueError(f'Door is locked!')
 
         if user_key != self.__pass_key:
             self.__try += 1
@@ -107,6 +108,6 @@ print(door1.unlock(1235))
 print(door1.unlock(1235))
 print(door1.unlock(1235))
 print(door1.door_status())
-time.sleep(60)
+time.sleep(10)
 print(door1.unlock(1235))
 print(door1.door_status())

@@ -81,7 +81,7 @@ class DBUsage:
         values = [value.strip() for value in param.split(',')]
         inpt = ','.join(['%s'] * len(values))
         with self.conn.cursor() as cursor:
-            cursor.execute(f"""INSERT INTO `{table_name}` ({column}) VALUES ({inpt}""", values)
+            cursor.execute(f"""INSERT INTO `{table_name}` ({column}) VALUES ({inpt})""", values)
 
 
 db1 = DBUsage(config)

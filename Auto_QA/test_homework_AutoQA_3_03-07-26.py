@@ -1,94 +1,204 @@
 import pytest
+import shutil
 from selenium import webdriver
+from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.common.exceptions import StaleElementReferenceException
 
 
-@pytest.fixture
+# ---------------------------------------------------------------------------
+# Хелперы
+# ---------------------------------------------------------------------------
+
+def find_by_text(driver, text, tag="a"):
+    """Находит видимый элемент по частичному совпадению текста (регистронезависимо)."""
+    for elem in driver.find_elements(By.TAG_NAME, tag):
+        if text.lower() in (elem.get_attribute("textContent") or "").lower():
+            if elem.is_displayed():
+                return elem
+    return None
+
+
+def hover_and_wait_visible(driver, wait, hover_target_text, target_text, tag="a"):
+    """Наводит мышь на hover_target_text и ждёт появления target_text."""
+    trigger = find_by_text(driver, hover_target_text, tag)
+    assert trigger is not None, f"Элемент '{hover_target_text}' для hover не найден"
+    ActionChains(driver).move_to_element(trigger).perform()
+    wait.until(
+        lambda d: find_by_text(d, target_text, tag) is not None,
+        message=f"Элемент '{target_text}' не появился после наведения на '{hover_target_text}'"
+    )
+
+
+def click_contacts_link(driver, wait):
+    """
+    Кликает по ссылке 'Контакты' в дропдауне 'О нас'.
+    Контакты ведут на отдельную страницу (/contact-us), поэтому после клика
+    ждём загрузки новой страницы через смену URL.
+    """
+    contacts = find_by_text(driver, "Контакты")
+    if contacts is None or not contacts.is_displayed():
+        hover_and_wait_visible(driver, wait, "О нас", "Контакты")
+
+    contacts = find_by_text(driver, "Контакты")
+    assert contacts is not None, "Ссылка 'Контакты' не найдена"
+    current_url = driver.current_url
+    driver.execute_script("arguments[0].click();", contacts)
+
+    # Ждём смены URL — признак что новая страница загружается
+    wait.until(
+        lambda d: d.current_url != current_url,
+        message="URL не изменился после клика по 'Контакты' — страница не загрузилась"
+    )
+
+
+# ---------------------------------------------------------------------------
+# Фикстуры
+# ---------------------------------------------------------------------------
+
+@pytest.fixture(scope="function")
 def driver():
-    firefox_service = Service(executable_path="./geckodriver.exe")
-    driver = webdriver.Firefox(service=firefox_service)
+    gecko_path = shutil.which("geckodriver") or "./geckodriver.exe"
+    service = Service(executable_path=gecko_path)
+    driver = webdriver.Firefox(service=service)
     driver.maximize_window()
-    driver.implicitly_wait(5)
     yield driver
     driver.quit()
 
 
-def test_itcareerhub_flow(driver):
-    wait = WebDriverWait(driver, 10)
+@pytest.fixture(scope="function")
+def opened_site(driver):
+    """Открывает главную страницу и возвращает (driver, wait)."""
     driver.get("https://itcareerhub.de/ru")
+    wait = WebDriverWait(driver, 10)
+    return driver, wait
+
+
+# ---------------------------------------------------------------------------
+# 1. Логотип
+# ---------------------------------------------------------------------------
+
+def test_logo_is_visible(opened_site):
+    """Логотип ITCareerHub отображается на главной странице."""
+    driver, wait = opened_site
     logo_selector = "a[href*='itcareerhub'] img, img[src*='logo'], img[alt*='logo'], img[alt*='Logo']"
-    logo = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, logo_selector)))
-    assert logo.is_displayed(), "Логотип ITCareerHub не отображается"
-    def find_element_by_text_insensitive(text_to_find, tag_name="a"):
-        try:
-            elements = driver.find_elements(By.TAG_NAME, tag_name)
-            matching_elements = []
-            for elem in elements:
-                try:
-                    text = elem.get_attribute("textContent") or ""
-                    if text_to_find.lower() in text.lower():
-                        matching_elements.append(elem)
-                except StaleElementReferenceException:
-                    continue
+    logo = wait.until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, logo_selector)),
+        message="Логотип ITCareerHub не отображается"
+    )
+    assert logo.is_displayed()
 
-            for elem in matching_elements:
-                try:
-                    if elem.is_displayed():
-                        return elem
-                except StaleElementReferenceException:
-                    continue
 
-            if matching_elements:
-                return matching_elements[0]
-        except Exception:
-            pass
-        return None
+# ---------------------------------------------------------------------------
+# 2. Навигационные ссылки
+# ---------------------------------------------------------------------------
 
-    expected_links = ["Программы", "Способы оплаты", "О нас", "Контакты", "Отзывы", "Блог"]
-    for link_text in expected_links:
-        elem = find_element_by_text_insensitive(link_text, tag_name="a")
-        assert elem is not None, f"Ссылка '{link_text}' не найдена в структуре страницы"
+@pytest.mark.parametrize("link_text", [
+    "Программы",
+    "Способы оплаты",
+    "О нас",
+    "Отзывы",
+    "Блог",
+])
+def test_nav_link_visible(opened_site, link_text):
+    """Навигационная ссылка отображается в меню."""
+    driver, wait = opened_site
+    wait.until(
+        lambda d: find_by_text(d, link_text) is not None,
+        message=f"Ссылка '{link_text}' не найдена на странице"
+    )
+    elem = find_by_text(driver, link_text)
+    assert elem.is_displayed(), f"Ссылка '{link_text}' скрыта от пользователя"
 
-        if link_text == "Контакты" and not elem.is_displayed():
-            about_us_btn = find_element_by_text_insensitive("О нас", "a")
-            if about_us_btn:
-                ActionChains(driver).move_to_element(about_us_btn).perform()
-                wait.until(lambda d: find_element_by_text_insensitive("Контакты", "a") is not None and
-                                     find_element_by_text_insensitive("Контакты", "a").is_displayed())
-                elem = find_element_by_text_insensitive(link_text, tag_name="a")
 
-        assert elem.is_displayed(), f"Ссылка '{link_text}' скрыта от пользователя"
+def test_contacts_link_visible_after_hover(opened_site):
+    """Ссылка 'Контакты' становится видима после наведения на 'О нас'."""
+    driver, wait = opened_site
+    contacts = find_by_text(driver, "Контакты")
+    if contacts is None or not contacts.is_displayed():
+        hover_and_wait_visible(driver, wait, "О нас", "Контакты")
+    contacts = find_by_text(driver, "Контакты")
+    assert contacts is not None and contacts.is_displayed(), \
+        "Ссылка 'Контакты' не отображается даже после hover на 'О нас'"
 
-    lang_ru = find_element_by_text_insensitive("RU", "a") or find_element_by_text_insensitive("RU", "div")
-    lang_de = find_element_by_text_insensitive("DE", "a") or find_element_by_text_insensitive("DE", "div")
-    assert lang_ru is not None and lang_ru.is_displayed(), "Переключатель языка RU не найден"
-    assert lang_de is not None and lang_de.is_displayed(), "Переключатель языка DE не найден"
 
-    contacts_link = find_element_by_text_insensitive("Контакты", "a")
-    if not contacts_link or not contacts_link.is_displayed():
-        about_us_btn = find_element_by_text_insensitive("О нас", "a")
-        if about_us_btn:
-            ActionChains(driver).move_to_element(about_us_btn).perform()
-            wait.until(lambda d: find_element_by_text_insensitive("Контакты", "a") is not None and
-                                 find_element_by_text_insensitive("Контакты", "a").is_displayed())
+# ---------------------------------------------------------------------------
+# 3. Переключатели языка
+# ---------------------------------------------------------------------------
 
-    contacts_link = find_element_by_text_insensitive("Контакты", "a")
-    contacts_link.click()
+@pytest.mark.parametrize("lang", ["RU", "DE"])
+def test_language_switcher_visible(opened_site, lang):
+    """Переключатель языка RU/DE отображается на странице."""
+    driver, wait = opened_site
+    wait.until(
+        lambda d: find_by_text(d, lang, "a") is not None
+                  or find_by_text(d, lang, "div") is not None,
+        message=f"Переключатель языка '{lang}' не найден"
+    )
+    elem = find_by_text(driver, lang, "a") or find_by_text(driver, lang, "div")
+    assert elem is not None and elem.is_displayed(), \
+        f"Переключатель языка '{lang}' не отображается"
 
-    def wait_for_callback_button(d):
-        for tag in ["a", "button", "div", "span"]:
-            btn = find_element_by_text_insensitive("Обратный звонок", tag)
-            if btn and btn.is_displayed():
-                return btn
-        return False
-    callback_btn = wait.until(wait_for_callback_button, message="Кнопка 'Обратный звонок' не появилась после перехода на страницу Контакты")
+
+# ---------------------------------------------------------------------------
+# 4. Переход на страницу Контакты
+# ---------------------------------------------------------------------------
+
+def test_contacts_page_opens(opened_site):
+    """Клик по 'Контакты' открывает страницу с кнопкой 'Обратный звонок'."""
+    driver, wait = opened_site
+
+    click_contacts_link(driver, wait)
+
+    wait.until(
+        lambda d: find_by_text(d, "Обратный звонок", "a")
+                  or find_by_text(d, "Обратный звонок", "button")
+                  or find_by_text(d, "Обратный звонок", "div")
+                  or find_by_text(d, "Обратный звонок", "span"),
+        message="Страница 'Контакты' не загрузилась: кнопка 'Обратный звонок' не найдена"
+    )
+
+
+# ---------------------------------------------------------------------------
+# 5. Попап «Обратный звонок»
+# ---------------------------------------------------------------------------
+
+def test_callback_popup_opens(opened_site):
+    """Клик по 'Обратный звонок' открывает модальное окно с нужным текстом."""
+    driver, wait = opened_site
+
+    click_contacts_link(driver, wait)
+
+    wait.until(
+        lambda d: find_by_text(d, "Обратный звонок", "a")
+                  or find_by_text(d, "Обратный звонок", "button")
+                  or find_by_text(d, "Обратный звонок", "div")
+                  or find_by_text(d, "Обратный звонок", "span"),
+        message="Кнопка 'Обратный звонок' не появилась"
+    )
+
+    callback_btn = (
+            find_by_text(driver, "Обратный звонок", "a")
+            or find_by_text(driver, "Обратный звонок", "button")
+            or find_by_text(driver, "Обратный звонок", "div")
+            or find_by_text(driver, "Обратный звонок", "span")
+    )
     driver.execute_script("arguments[0].click();", callback_btn)
+
     popup_selector = "[class*='popup'], [class*='modal'], .t-popup"
-    popup = wait.until(EC.visibility_of_element_located((By.CSS_SELECTOR, popup_selector)))
+    wait.until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, popup_selector)),
+        message="Модальное окно не открылось"
+    )
+
     expected_text = "Запишитесь на бесплатную карьерную консультацию"
-    wait.until(lambda d: expected_text.lower() in popup.text.lower(), message=f"Текст '{expected_text}' не появился в модальном окне")
+    # Берём текст заново каждую итерацию, чтобы не словить stale reference на popup
+    wait.until(
+        lambda d: expected_text.lower() in (
+            d.find_element(By.CSS_SELECTOR, popup_selector).text.lower()
+        ),
+        message=f"Текст '{expected_text}' не появился в модальном окне"
+    )
+    assert expected_text.lower() in driver.find_element(By.CSS_SELECTOR, popup_selector).text.lower()

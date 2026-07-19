@@ -117,3 +117,4 @@ class TestDragAndDrop:
         photos_in_trash = driver.find_elements(By.CSS_SELECTOR, "#trash li")
         assert len(photos_in_gallery) == 3, (f"В галерее должно быть 3 фото, осталось: {len(photos_in_gallery)}")
         assert len(photos_in_trash) == 1, (f"В корзине должно быть 1 фото, найдено: {len(photos_in_trash)}")
+        

@@ -44,12 +44,10 @@ class TestIframeText:
 #task2 Тестирование Drag & Drop (Перетаскивание изображения в корзину)
 PAGE_URL = "https://www.globalsqa.com/demo-site/draganddrop/"
 
-
 def get_firefox_options():
     options = Options()
     options.set_preference("network.proxy.type", 0)
     return options
-
 
 @pytest.fixture
 def driver():
@@ -57,7 +55,6 @@ def driver():
     firefox.maximize_window()
     yield firefox
     firefox.quit()
-
 
 def close_gdpr_popup(driver):
     try:
@@ -120,5 +117,3 @@ class TestDragAndDrop:
         photos_in_trash = driver.find_elements(By.CSS_SELECTOR, "#trash li")
         assert len(photos_in_gallery) == 3, (f"В галерее должно быть 3 фото, осталось: {len(photos_in_gallery)}")
         assert len(photos_in_trash) == 1, (f"В корзине должно быть 1 фото, найдено: {len(photos_in_trash)}")
-
-

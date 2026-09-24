@@ -13,6 +13,14 @@
 # - books
 # - users
 
+# task3 Меню книжного магазина.
+# Создайте новый файл, в котором будет размещено основное меню программы. Этот файл использует уже созданную ранее базу данных bookstore и таблицы books, users.
+# В меню пользователь может:
+# ● загрузить книги из файла (см. пункт 3.1 ниже),
+# ● зарегистрироваться как клиент (см. 3.2,
+# ● войти в свой аккаунт (см. 3.3,
+# ● завершить работу.
+
 import pymysql
 from collections.abc import Iterable
 import re
@@ -152,4 +160,9 @@ except Exception as e:
 else:
     print("Database 'bookstore' created or already exists.")
 
-print(BookStore.get_all_tables())
+print('Tables in "bookstore":')
+for item in BookStore.get_all_tables():
+    item_list = list(item.keys())
+    item1 = item_list[0]
+    print(f' - {item[item_list[0]]}')
+
